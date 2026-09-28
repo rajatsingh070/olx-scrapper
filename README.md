@@ -4,7 +4,7 @@
 
 ## Project Description
 
-OLX Scraper is a Python-based application designed to scrape data from OLX, a popular classifieds website. Provides a graphical user interface (GUI) created with PyQt5 to manage and view the scraped data, export it, and modify scraping settings. The project uses asynchronous web scraping to efficiently gather data.
+OLX Scraper is a Python-based application designed to scrape data from [OLX India (olx.in)](https://www.olx.in), a popular classifieds website. Provides a graphical user interface (GUI) created with PyQt5 to manage and view the scraped data, export it, and modify scraping settings. The project uses asynchronous web scraping to efficiently gather data.
 
 ## Features
 
@@ -38,13 +38,29 @@ OLX Scraper is a Python-based application designed to scrape data from OLX, a po
 
 4. **Run the Application!**
    ```bash
-   python -m src/main.py
+   python -m src.main
    ```
 
 ## Project Overview
 
 ### Scraping
 The scraping functionality is managed by the Scraper class located in src/Scraping/Scraper.py. This class handles the retrieval of data from OLX using asynchronous web scraping techniques, ensuring efficient and fast data collection. The search queries are defined in the config.json file located in the Resources directory.
+
+### Search queries and location filters
+Each query in `config.json` (or the "Search Queries" window) has four fields:
+
+| Field | Example | What it does |
+|---|---|---|
+| `item_query` | `iphone 13` | What to search for. |
+| `location` | `Bangalore`, `Whitefield`, `Kerala`, `bangalore_g4058803` | Where to search. Place names are looked up with olx.in's location search and cached in `Resources/location_cache.json`. You can also paste the location part of an olx.in URL to pin an exact location. Empty means all of India. |
+| `distance` | `15` | Optional radius in km around the location's centre, applied locally using each listing's coordinates. Adds a sortable "Distance (km)" column. |
+| `localities` | `andheri, bandra, powai` | Optional comma-separated areas. Only listings whose location mentions one of them are kept. |
+
+To check a query from the command line without touching the scraping history:
+
+```bash
+python -m src.Scraping.probe "iphone 13" --location Bangalore --distance 10
+```
 
 ### Exporting
 Exporting the scraped data is managed by the ExportManager class in src/Exporting/ExportManager.py. Users can export data to various formats such as CSV or Excel spreadsheets.

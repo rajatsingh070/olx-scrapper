@@ -1,34 +1,28 @@
 {
     "search_queries": [
         {
-            "item_query": "rower trekkingowy",
-            "city": "wroclaw",
-            "distance": "30"
+            "item_query": "iphone 13",
+            "location": "Bangalore",
+            "distance": "15",
+            "localities": ""
         },
         {
-            "item_query": "rower elektryczny",
-            "city": "legnica",
-            "distance": "50"
+            "item_query": "royal enfield classic 350",
+            "location": "Delhi",
+            "distance": "",
+            "localities": ""
         },
         {
-            "item_query": "rower gravel",
-            "city": "",
-            "distance": ""
+            "item_query": "macbook air m1",
+            "location": "Mumbai",
+            "distance": "",
+            "localities": "andheri, bandra, powai"
         },
         {
-            "item_query": "rower gorski",
-            "city": "szczecin",
-            "distance": ""
-        },
-        {
-            "item_query": "rower gravel",
-            "city": "katy wroclawskie",
-            "distance": "10"
-        },
-        {
-            "item_query": "rower elektryczny",
-            "city": "olesnica",
-            "distance": "15"
+            "item_query": "honda activa",
+            "location": "",
+            "distance": "",
+            "localities": ""
         }
     ],
     "output_config": {

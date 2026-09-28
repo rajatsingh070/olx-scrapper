@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import bs4.element
 import pandas as pd
 import aiohttp
@@ -7,10 +8,11 @@ import asyncio
 import re
 from datetime import datetime
 from typing import Union, Callable, Optional
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-from src.Exporting.formatting import format_price, format_location_date
-from src.Scraping.URLBuilder import URLBuilder
+from src.Exporting.formatting import format_price, format_listing_date
+from src.Scraping.Locations import LocationResolver, haversine_km
+from src.Scraping.URLBuilder import URLBuilder, API_SEARCH_URL, OLX_BASE, slugify
 
 
 # Heuristics for filtering out accessory/parts listings that show up when
@@ -39,9 +41,26 @@ _ACCESSORY_KEYWORDS = {
     "glass", "tempered", "protector", "screen", "film",
     "charger", "cable", "adapter", "holder", "mount", "stand",
     "replacement", "repair", "parts", "flap",
+    # Common on olx.in
+    "guard", "pouch", "skin", "spare", "spares", "accessory", "accessories",
 }
 
 _TOKEN_RE = re.compile(r"[\w]+", flags=re.UNICODE)
+
+# olx.in rejects requests that don't look like they come from a browser.
+_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "en-IN,en;q=0.9",
+}
+_API_HEADERS = {**_BROWSER_HEADERS, "Accept": "application/json, text/plain, */*"}
+_HTML_HEADERS = {**_BROWSER_HEADERS, "Accept": "text/html,application/xhtml+xml,*/*;q=0.8"}
+
+_APP_STATE_RE = re.compile(r"window\.__APP\s*=\s*")
+
+DISTANCE_COLUMN = "Distance (km)"
 
 
 def _classify_relevance(title: str) -> bool:
@@ -57,18 +76,65 @@ def _classify_relevance(title: str) -> bool:
     return True
 
 
+def _dig(data, *path):
+    """Safely walk nested dicts/lists: _dig(ad, "price", "value", "raw")."""
+    for key in path:
+        if isinstance(data, dict):
+            data = data.get(key)
+        elif isinstance(data, list) and isinstance(key, int) and -len(data) <= key < len(data):
+            data = data[key]
+        else:
+            return None
+    return data
+
+
+def _looks_like_ad(node) -> bool:
+    return (
+        isinstance(node, dict)
+        and isinstance(node.get("title"), str)
+        and "price" in node
+        and ("ad_id" in node or "id" in node)
+    )
+
+
+def _find_ads(payload) -> list[dict]:
+    """Collect ad objects from an API response or the page's embedded state, wherever they are."""
+    found, seen = [], set()
+
+    def walk(node):
+        if _looks_like_ad(node):
+            ad_id = str(node.get("ad_id") or node.get("id"))
+            if ad_id not in seen:
+                seen.add(ad_id)
+                found.append(node)
+            return
+        if isinstance(node, dict):
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(payload)
+    return found
+
+
 class Scraper:
-    def __init__(self, url_strings: list[URLBuilder], page_limit: int) -> None:
+    def __init__(self, url_strings: list[URLBuilder], page_limit: int,
+                 request_delay: tuple[float, float] = (1.0, 2.5), max_concurrent_queries: int = 2) -> None:
         """
-        Scraper class for scraping data from OLX.
+        Scraper class for scraping data from olx.in.
         :param url_strings: List of URLBuilder objects for scraping data.
         :param page_limit: Limit of pages to scrape for each URL.
+        :param request_delay: Random pause range (seconds) between page requests of one query.
+        :param max_concurrent_queries: How many queries are scraped at the same time.
         """
         self.url_list = url_strings if url_strings else []
         self.page_limit = page_limit
+        self.request_delay = request_delay
+        self.max_concurrent_queries = max_concurrent_queries
         self.data_frames = dict()
-        self.count_pattern = re.compile(r'Znaleźliśmy\s+(?:ponad\s+)?(\d+)\s+ogłosze(?:ń|nie|nia)')
-        self.listings_counts = []
+        self.errors: dict[str, str] = dict()
         self.resources_dir = os.path.join(os.path.dirname(__file__), '../Resources')
         self.scraping_history = self.load_scraping_history()
         self.last_scrape_date = (
@@ -77,6 +143,9 @@ class Scraper:
         )
         self._seen_urls_file = os.path.join(self.resources_dir, 'seen_listings.json')
         self._seen_urls: dict = self._load_seen_urls()
+        self.location_resolver = LocationResolver(
+            os.path.join(self.resources_dir, 'location_cache.json'), headers=_API_HEADERS
+        )
 
     def add_url(self, url: URLBuilder) -> None:
         """Adds a URLBuilder object to the list of URLs to scrape."""
@@ -85,18 +154,34 @@ class Scraper:
     async def scrape_data(self, progress_callback: Callable[[int], None] = None) -> dict[str, pd.DataFrame]:
         """Scrapes data from the URLs asynchronously."""
         self.data_frames = dict()
+        self.errors = dict()
         num_urls = len(self.url_list)
         if num_urls == 0:
             return self.data_frames
 
-        tasks = []
-        for i, url in enumerate(self.url_list):
-            tasks.append(self._fetch_data_from_url(url))
-            if progress_callback:
-                progress_callback(int((i + 1) / num_urls * 50))
-            await asyncio.sleep(0.1)
+        semaphore = asyncio.Semaphore(self.max_concurrent_queries)
+        finished = 0
 
-        data = await asyncio.gather(*tasks)
+        async def run_query(session: aiohttp.ClientSession, url_builder: URLBuilder) -> pd.DataFrame:
+            nonlocal finished
+            async with semaphore:
+                try:
+                    return await self._fetch_data_from_url(session, url_builder)
+                except Exception as e:
+                    # One failing query shouldn't throw away the others.
+                    self.errors[url_builder.generate_data_key()] = str(e)
+                    return pd.DataFrame()
+                finally:
+                    finished += 1
+                    if progress_callback:
+                        progress_callback(int(finished / num_urls * 50))
+
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30)) as session:
+            data = await asyncio.gather(*(run_query(session, url) for url in self.url_list))
+
+        if len(self.errors) == num_urls:
+            raise Exception("; ".join(self.errors.values()))
+
         current_urls: dict = {}
         for i, result, url_builder in zip(range(len(self.url_list)), data, self.url_list):
             key = url_builder.generate_data_key()
@@ -136,7 +221,7 @@ class Scraper:
                     if row.get("Item URL")
                 }
             else:
-                current_urls[key] = {}
+                current_urls[key] = self._seen_urls.get(key, {}) if key in self.errors else {}
             self.data_frames[key] = result
             if progress_callback:
                 progress_callback(int((i + 1) / num_urls * 50 + 50))
@@ -146,38 +231,147 @@ class Scraper:
         self.save_scrape_date()
         return self.data_frames
 
-    async def _fetch_data_from_url(self, url_builder: URLBuilder) -> pd.DataFrame:
-        """Fetches data from the given URL."""
-        async with aiohttp.ClientSession() as session:
-            all_items = []
-            page = 1
-            while True:
-                site_url = urlparse(url_builder.build_url(page))
-                async with session.get(site_url.geturl()) as response:
-                    if response.status == 200:
-                        soup = BeautifulSoup(await response.text(), "html.parser")
-                        items = soup.find_all("div", {"data-cy": "l-card"})
-                        all_items.extend(items)
-                        count = self.find_count(soup)
+    async def _fetch_data_from_url(self, session: aiohttp.ClientSession, url_builder: URLBuilder) -> pd.DataFrame:
+        """Fetches, parses and location-filters the listings of one query."""
+        await self.location_resolver.resolve(session, url_builder)
 
-                        if page >= self.page_limit or len(all_items) >= count:
-                            break
-                        page += 1
-                    else:
-                        raise Exception(f"Error: {response.status} for {site_url.geturl()}")
+        rows = await self._fetch_via_api(session, url_builder)
+        if rows is None:
+            # The API answered with something we don't recognise; fall back to the web page.
+            rows = await self._fetch_via_html(session, url_builder)
 
-            processed = []
-            for item in all_items:
+        rows = self._apply_location_filters(rows, url_builder)
+        return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+    async def _get(self, session: aiohttp.ClientSession, url: str, headers: dict,
+                   params: Optional[dict] = None) -> str:
+        async with session.get(url, params=params, headers=headers) as response:
+            if response.status in (403, 429):
+                raise Exception(
+                    f"olx.in refused the request ({response.status}) — too many requests or the "
+                    f"scraper was blocked. Wait a while, lower the page limit, and try again."
+                )
+            if response.status != 200:
+                raise Exception(f"Error: {response.status} for {response.url}")
+            return await response.text()
+
+    async def _fetch_via_api(self, session: aiohttp.ClientSession, url_builder: URLBuilder) -> Optional[list[dict]]:
+        """
+        Pages through olx.in's search API.
+        :return: parsed rows, or None if the response didn't look like search results.
+        """
+        rows, seen_ids = [], set()
+        for page in range(1, self.page_limit + 1):
+            if page > 1:
+                await asyncio.sleep(random.uniform(*self.request_delay))
+            text = await self._get(session, API_SEARCH_URL, _API_HEADERS, url_builder.build_api_params(page))
+            try:
+                payload = json.loads(text)
+            except json.JSONDecodeError:
+                return None if page == 1 else rows
+
+            ads = payload.get("data") if isinstance(payload, dict) else None
+            if not isinstance(ads, list):
+                ads = _find_ads(payload)
+                if not ads and page == 1:
+                    return None
+            ads = [ad for ad in ads if _looks_like_ad(ad)]
+
+            new_ads = [ad for ad in ads if str(ad.get("ad_id") or ad.get("id")) not in seen_ids]
+            if not new_ads:
+                break
+            for ad in new_ads:
+                seen_ids.add(str(ad.get("ad_id") or ad.get("id")))
+                row = self._parse_ad(ad)
+                if row.get("Title"):
+                    rows.append(row)
+            metadata = _dig(payload, "metadata")
+            if isinstance(metadata, dict) and "next_page_url" in metadata and not metadata["next_page_url"]:
+                break  # last page
+        return rows
+
+    async def _fetch_via_html(self, session: aiohttp.ClientSession, url_builder: URLBuilder) -> list[dict]:
+        """Parses the first search results page (olx.in loads later pages via the API)."""
+        html = await self._get(session, url_builder.build_url(1), _HTML_HEADERS)
+        ads = self._extract_app_state_ads(html)
+        if ads:
+            rows = [self._parse_ad(ad) for ad in ads]
+        else:
+            soup = BeautifulSoup(html, "html.parser")
+            rows = []
+            for card in soup.select('li[data-aut-id="itemBox"]'):
                 try:
-                    row = self._process_item(item)
-                    if row.get("Title"):  # skip rows we couldn't parse a title for
-                        processed.append(row)
+                    rows.append(self._parse_card(card))
                 except Exception:
                     # Defensive: never let one malformed card kill the whole scrape.
                     continue
+        return [row for row in rows if row.get("Title")]
 
-            return pd.DataFrame(processed) if processed else pd.DataFrame()
+    @staticmethod
+    def _extract_app_state_ads(html: str) -> list[dict]:
+        """olx.in embeds its initial page state as `window.__APP = {...}`; pull the ads out of it."""
+        match = _APP_STATE_RE.search(html)
+        if not match:
+            return []
+        try:
+            state, _ = json.JSONDecoder().raw_decode(html, match.end())
+        except ValueError:
+            return []
+        return _find_ads(state)
 
+    @staticmethod
+    def _parse_ad(ad: dict) -> dict:
+        """Turns one olx.in ad object (API or page state) into a table row."""
+        title = str(ad.get("title") or "").strip()
+        ad_id = ad.get("ad_id") or ad.get("id")
+
+        price = _dig(ad, "price", "value", "raw")
+        if not isinstance(price, (int, float)):
+            display = _dig(ad, "price", "value", "display")
+            if isinstance(display, str):
+                price = format_price(display)
+            elif isinstance(ad.get("price"), (int, float)):
+                price = ad["price"]
+            else:
+                price = 0
+
+        resolved = ad.get("locations_resolved") or {}
+        area = resolved.get("SUBLOCALITY_LEVEL_1_name")
+        city = resolved.get("ADMIN_LEVEL_3_name")
+        state = resolved.get("ADMIN_LEVEL_1_name")
+        parts = [p for p in (area, city) if p] or ([state] if state else [])
+        location = ", ".join(dict.fromkeys(parts))
+        if not location and isinstance(ad.get("location"), str):
+            location = ad["location"]
+
+        lat = _dig(ad, "locations", 0, "lat")
+        lon = _dig(ad, "locations", 0, "lon")
+
+        date = ad.get("created_at_first") or ad.get("created_at") or ad.get("display_date") or ""
+
+        url = ad.get("url") if isinstance(ad.get("url"), str) else ""
+        if not url and ad_id:
+            url = f"/item/{slugify(title) or 'ad'}-iid-{ad_id}"
+        url = urljoin(OLX_BASE, url) if url else ""
+
+        photo = ""
+        image = _dig(ad, "images", 0)
+        if isinstance(image, dict):
+            photo = image.get("url") or _dig(image, "big", "url") or _dig(image, "medium", "url") or ""
+        elif isinstance(image, str):
+            photo = image
+
+        return {
+            "Title": title,
+            "Price": int(price or 0),
+            "Location": location,
+            "Date": format_listing_date(str(date)),
+            "Item URL": url,
+            "Photo": photo,
+            "_lat": lat if isinstance(lat, (int, float)) else None,
+            "_lon": lon if isinstance(lon, (int, float)) else None,
+            "_state": state or "",
+        }
 
     @staticmethod
     def _safe_text(element) -> str:
@@ -190,119 +384,70 @@ class Scraper:
             return ""
 
     @staticmethod
-    def _extract_title(item: bs4.element.Tag) -> str:
-        """
-        Title extraction is the part OLX randomizes the most.
-        Try every heading tag; if none, fall back to the anchor's aria-label,
-        then the anchor text itself.
-        """
-        heading = item.find(["h1", "h2", "h3", "h4", "h5", "h6"])
-        title = Scraper._safe_text(heading)
-        if title:
-            return title
-        
-        anchor = item.find("a")
-        if anchor is not None:
-            aria = anchor.get("aria-label")
-            if aria:
-                return aria.strip()
+    def _parse_card(card: bs4.element.Tag) -> dict:
+        """Parses a listing card from the olx.in search page HTML."""
+        text = Scraper._safe_text
+        title = text(card.select_one('[data-aut-id="itemTitle"]'))
+        if not title:
+            anchor = card.find("a")
+            title = (anchor.get("title") or anchor.get("aria-label") or "") if anchor else ""
+        price = format_price(text(card.select_one('[data-aut-id="itemPrice"]')))
+        location = text(card.select_one('[data-aut-id="item-location"]'))
 
-        return Scraper._safe_text(anchor)
+        date = ""
+        date_el = card.select_one('[data-aut-id="itemDetails"] + span, [data-aut-id="item-location"] ~ span')
+        if date_el is not None:
+            date = text(date_el)
 
-    @staticmethod
-    def _extract_price(item: bs4.element.Tag) -> int:
-        """
-        Find a <p> tag whose text looks like a price. We scan all <p> tags
-        rather than assume the first one is the price.
-        """
-        candidates = item.find_all("p")
-        for p in candidates:
-            txt = Scraper._safe_text(p)
-            if not txt:
-                continue
-            # Price text on OLX usually contains 'zł' or 'do negocjacji' or just digits
-            if "zł" in txt.lower() or "negocjacji" in txt.lower() or re.search(r"\d", txt):
-                # Skip the location-date paragraph if it sneaks in
-                if p.get("data-testid") == "location-date":
-                    continue
-                try:
-                    return format_price(txt)
-                except Exception:
-                    continue
-        return 0
-
-    @staticmethod
-    def _extract_location_date(item: bs4.element.Tag) -> tuple[str, str]:
-        """Try data-testid first, fall back to scanning <p> tags for a ' - ' separator."""
-        loc_date_el = item.find("p", {"data-testid": "location-date"})
-        if loc_date_el is None:
-            for p in item.find_all("p"):
-                txt = Scraper._safe_text(p)
-                if " - " in txt and "zł" not in txt.lower():
-                    loc_date_el = p
-                    break
-
-        if loc_date_el is None:
-            return "", ""
-
-        try:
-            return format_location_date(loc_date_el.get_text())
-        except Exception:
-            return "", ""
-
-    @staticmethod
-    def _extract_photo(item: bs4.element.Tag) -> str:
-        img = item.find("img")
-        if img is None:
-            return ""
-        # Some lazy-loaded variants put the real URL in data-src
-        return img.get("src") or img.get("data-src") or ""
-
-    @staticmethod
-    def _extract_url(item: bs4.element.Tag) -> str:
-        anchor = item.find("a")
-        if anchor is None:
-            return ""
-        href = anchor.get("href", "")
-        if not href:
-            return ""
-        return urljoin("https://www.olx.pl", href)
-
-    @staticmethod
-    def _process_item(item: bs4.element.Tag) -> dict:
-        """
-        Processes an item from the scraped data.
-        Each field is extracted defensively so that a single missing element
-        does not break the whole row.
-        """
+        anchor = card.find("a", href=True)
+        img = card.find("img")
         return {
-            "Title": Scraper._extract_title(item),
-            "Price": Scraper._extract_price(item),
-            "Location": Scraper._extract_location_date(item)[0],
-            "Date": Scraper._extract_location_date(item)[1],
-            "Item URL": Scraper._extract_url(item),
-            "Photo": Scraper._extract_photo(item),
+            "Title": title.strip(),
+            "Price": price,
+            "Location": location,
+            "Date": date,
+            "Item URL": urljoin(OLX_BASE, anchor["href"]) if anchor else "",
+            "Photo": (img.get("src") or img.get("data-src") or "") if img else "",
+            "_lat": None,
+            "_lon": None,
+            "_state": "",
         }
 
+    @staticmethod
+    def _apply_location_filters(rows: list[dict], url_builder: URLBuilder) -> list[dict]:
+        """
+        Fine-grained location filtering on top of OLX's own location search:
+        - localities: keep listings whose location mentions one of the given areas
+        - distance: keep listings within N km of the searched location, and add a
+          "Distance (km)" column. Listings without coordinates are kept.
+        """
+        localities = url_builder.locality_list
+        if localities:
+            rows = [r for r in rows if any(loc in r["Location"].lower() for loc in localities)]
 
-    def find_count(self, soup: BeautifulSoup) -> int:
-        """
-        Finds the number of listings on the page.
-        Returns a large number on failure so we don't break out of pagination
-        prematurely just because the count element changed.
-        """
-        try:
-            count_element = soup.find("span", {"data-testid": "total-count"})
-            if count_element is None:
-                return 10**6
-            match = self.count_pattern.search(count_element.text)
-            if not match:
-                return 10**6
-            count = int(match.group(1))
-            self.listings_counts.append(count)
-            return count
-        except Exception:
-            return 10**6
+        radius = url_builder.distance_km
+        center = (url_builder.location_lat, url_builder.location_lon)
+        has_center = None not in center
+        if has_center:
+            kept = []
+            for row in rows:
+                if row["_lat"] is not None and row["_lon"] is not None:
+                    km = round(haversine_km(center[0], center[1], row["_lat"], row["_lon"]), 1)
+                    if radius and km > radius:
+                        continue
+                    row[DISTANCE_COLUMN] = km
+                else:
+                    row[DISTANCE_COLUMN] = None
+                kept.append(row)
+            rows = kept
+            if all(row[DISTANCE_COLUMN] is None for row in rows):
+                for row in rows:
+                    row.pop(DISTANCE_COLUMN)
+
+        for row in rows:
+            for internal in ("_lat", "_lon", "_state"):
+                row.pop(internal, None)
+        return rows
 
     def save_scrape_date(self) -> None:
         """Saves the date of the last scrape to the scraping history file."""

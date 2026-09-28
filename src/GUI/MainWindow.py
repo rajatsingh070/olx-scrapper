@@ -32,6 +32,7 @@ from PyQt5.QtWidgets import (
     QSizePolicy, QApplication, QTabWidget, QHeaderView, QStyledItemDelegate
 )
 
+from src.Exporting.formatting import format_inr
 from src.GUI.DataFrameModel import DataFrameModel
 from src.GUI.Controller import Controller
 from src.GUI.ExportDialog import ExportDialog
@@ -308,7 +309,7 @@ class _DataTab(QWidget):
             title="Nothing scraped yet",
             subtitle=(
                 "OLX returned no listings for this search — "
-                "try widening the city/distance or adjusting the query."
+                "try a wider location or distance, fewer localities, or a different query."
             ),
             icon_name="inbox",
         )
@@ -365,7 +366,7 @@ class _DataTab(QWidget):
         median = self.source_model.median_match_price()
         if median > 0:
             self.section_median.setText(
-                ("·  median " + f"{median:,} zł").replace(",", " ")
+                f"·  median {format_inr(median)}"
             )
         else:
             self.section_median.setText("")
@@ -979,6 +980,12 @@ class MainWindow(QMainWindow):
         if deal_count:
             body += f"  ·  {deal_count} price drop{'s' if deal_count != 1 else ''}"
         self.toast_manager.success("Scrape complete", body + ".")
+        errors = self.controller.scraper.errors
+        if errors:
+            self.toast_manager.error(
+                f"{len(errors)} quer{'y' if len(errors) == 1 else 'ies'} failed",
+                "\n".join(f"{key}: {msg}" for key, msg in errors.items()),
+            )
 
     def _hide_progress(self) -> None:
         self.progress_bar.setVisible(False)

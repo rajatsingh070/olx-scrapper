@@ -5,6 +5,8 @@ from PyQt5.QtCore import QModelIndex, Qt
 from PyQt5.QtGui import QColor, QBrush, QFont
 import pandas as pd
 
+from src.Exporting.formatting import format_inr
+
 
 # Default palette mirrors the dark theme. MainWindow swaps it for light.
 _DARK_PALETTE = {
@@ -21,7 +23,7 @@ _DARK_PALETTE = {
 
 
 _LINK_COLUMNS = {"Item URL", "Photo"}
-_RIGHT_ALIGN_COLUMNS = {"Price"}
+_RIGHT_ALIGN_COLUMNS = {"Price", "Distance (km)"}
 _MUTED_COLUMNS = {"Date"}
 
 
@@ -184,10 +186,12 @@ class DataFrameModel(QtCore.QAbstractTableModel):
                     return str(val)
                 if n <= 0:
                     return "—"
-                label = f"{n:,} zł".replace(",", " ")
+                label = format_inr(n)
                 if self._old_price_for_row(index.row()) > 0:
                     label += "  ↓"
                 return label
+            if pd.isna(val):
+                return "—"
             return str(val)
 
         if role == Qt.TextAlignmentRole:
@@ -241,7 +245,7 @@ class DataFrameModel(QtCore.QAbstractTableModel):
                         cur = int(val)
                         saved = old - cur
                         pct = int(saved / old * 100)
-                        return f"Was: {old:,} zł  (↓ {saved:,} zł, -{pct}%)".replace(",", " ")
+                        return f"Was: {format_inr(old)}  (↓ {format_inr(saved)}, -{pct}%)"
                     except (TypeError, ValueError):
                         pass
 
@@ -266,6 +270,8 @@ class DataFrameModel(QtCore.QAbstractTableModel):
                     return int(val)
                 except (TypeError, ValueError):
                     return 0
+            if col_name == "Distance (km)" and pd.isna(val):
+                return float("inf")
             return val
         if role == DataFrameModel.DtypeRole:
             return self._dataframe.dtypes[index.column()]

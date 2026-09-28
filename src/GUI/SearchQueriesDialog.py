@@ -33,7 +33,7 @@ class _TableEditDelegate(QStyledItemDelegate):
         return editor
 
 
-_ALLOWED = re.compile(r"^[a-z0-9\-_\s]+$")
+_ALLOWED = re.compile(r"^[a-z0-9\-_\s,.]+$")
 _POLISH = {
     "ą": "a", "ć": "c", "ę": "e", "ł": "l", "ń": "n",
     "ó": "o", "ś": "s", "ź": "z", "ż": "z",
@@ -47,11 +47,21 @@ def _normalise(text: str) -> str:
     return text
 
 
-class SearchQueryTableModel(QAbstractTableModel):
-    """Three-column editable model: item_query, city, distance (km)."""
+def _migrate_query(query: dict) -> dict:
+    """Old olx.pl configs used "city"; olx.in queries use "location"."""
+    query = dict(query)
+    if "city" in query:
+        city = query.pop("city")
+        query.setdefault("location", city)
+    return query
 
-    HEADERS = ["Item Query", "City", "Distance (km)"]
-    KEYS = ["item_query", "city", "distance"]
+
+class SearchQueryTableModel(QAbstractTableModel):
+    """Editable model: item_query, location, distance (km), localities."""
+
+    HEADERS = ["Item Query", "Location", "Distance (km)", "Localities"]
+    KEYS = ["item_query", "location", "distance", "localities"]
+    DISTANCE_COL = 2
 
     def __init__(self, queries: list, parent: Optional[Any] = None) -> None:
         super().__init__(parent)
@@ -61,7 +71,7 @@ class SearchQueryTableModel(QAbstractTableModel):
         return 0 if parent.isValid() else len(self.queries)
 
     def columnCount(self, parent: QModelIndex = QModelIndex()) -> int:
-        return 0 if parent.isValid() else 3
+        return 0 if parent.isValid() else len(self.KEYS)
 
     def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Union[QVariant, str, dict]:
         if not index.isValid():
@@ -69,7 +79,7 @@ class SearchQueryTableModel(QAbstractTableModel):
         if role in (Qt.DisplayRole, Qt.EditRole):
             q = self.queries[index.row()]
             return str(q.get(self.KEYS[index.column()], "") or "")
-        if role == Qt.TextAlignmentRole and index.column() == 2:
+        if role == Qt.TextAlignmentRole and index.column() == self.DISTANCE_COL:
             return int(Qt.AlignRight | Qt.AlignVCenter)
         return QVariant()
 
@@ -91,7 +101,7 @@ class SearchQueryTableModel(QAbstractTableModel):
         new_val = _normalise(str(value))
         col = index.column()
         # distance can be empty or numeric
-        if col == 2:
+        if col == self.DISTANCE_COL:
             if new_val and not new_val.isdigit():
                 return False
         else:
@@ -122,7 +132,7 @@ class SearchQueriesDialog(QDialog):
         self.setModal(True)
         self.config_path = config_path
         self.config_data: dict = {}
-        self.setMinimumSize(720, 480)
+        self.setMinimumSize(880, 500)
         self._init_ui()
         self._load_queries()
 
@@ -144,7 +154,12 @@ class SearchQueriesDialog(QDialog):
         title = QLabel("Search Queries")
         title.setObjectName("DialogTitle")
         layout.addWidget(title)
-        sub = QLabel("Edit your watchlist. Each row produces an OLX search URL.")
+        sub = QLabel(
+            "Each row is an olx.in search. Location: a city, area or state (\"Bangalore\", "
+            "\"Whitefield\") or the part of an olx.in URL like \"bangalore_g4058803\". "
+            "Distance: optional km radius around it. Localities: optional comma-separated areas to keep."
+        )
+        sub.setWordWrap(True)
         sub.setObjectName("DialogSubtitle")
         layout.addWidget(sub)
 
@@ -192,8 +207,10 @@ class SearchQueriesDialog(QDialog):
         self.table_view.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.table_view.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.table_view.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        self.table_view.horizontalHeader().setSectionResizeMode(3, QHeaderView.Interactive)
         self.table_view.setColumnWidth(1, 180)
         self.table_view.setColumnWidth(2, 130)
+        self.table_view.setColumnWidth(3, 200)
         self.table_view.setItemDelegate(_TableEditDelegate(self.table_view))
         self.stack.addWidget(self.table_view)
 
@@ -242,12 +259,12 @@ class SearchQueriesDialog(QDialog):
     def _load_queries(self) -> None:
         with open(self.config_path, "r") as f:
             self.config_data = json.load(f)
-        self.table_model.queries = list(self.config_data.get("search_queries", []))
+        self.table_model.queries = [_migrate_query(q) for q in self.config_data.get("search_queries", [])]
         self.table_model.layoutChanged.emit()
         self._refresh_state()
 
     def _add_query(self) -> None:
-        self.table_model.addQuery({"item_query": "", "city": "", "distance": ""})
+        self.table_model.addQuery({"item_query": "", "location": "", "distance": "", "localities": ""})
         new_row = self.table_model.rowCount() - 1
         self.table_view.scrollToBottom()
         self.table_view.selectRow(new_row)
