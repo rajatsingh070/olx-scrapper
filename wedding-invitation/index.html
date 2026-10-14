@@ -102,7 +102,7 @@ p{margin:0}
 .hero{position:relative;text-align:center;padding-top:0;padding-bottom:8px;max-width:980px;margin-left:auto;margin-right:auto}
 .kalash{width:68px;height:78px;margin:-8px auto 0;display:block;filter:drop-shadow(0 4px 6px var(--shadow))}
 .ganesh{font-family:var(--font-deva);color:var(--gold-soft);font-size:var(--step-1)}
-.invite-line{max-width:36ch;margin:12px auto 0;color:var(--ivory-2);font-family:var(--font-deva);font-style:italic;font-size:var(--step-1);line-height:1.45;text-wrap:balance}
+.invite-line{word-wrap:break-word;overflow-wrap:anywhere;max-width:36ch;margin:12px auto 0;color:var(--ivory-2);font-family:var(--font-deva);font-style:italic;font-size:var(--step-1);line-height:1.45;text-wrap:balance}
 .names{font-family:var(--font-display);font-weight:400;font-size:var(--step-3);line-height:1.05;margin:14px auto 0;max-width:14ch;text-wrap:balance;word-wrap:break-word;overflow-wrap:anywhere;color:var(--haldi);text-shadow:0 3px 0 rgba(30,2,8,.6),0 0 28px rgba(242,159,5,.35)}
 .names .weds{display:inline-block;font-family:var(--font-deva);font-style:italic;font-size:.34em;vertical-align:.35em;margin-left:.15em;margin-right:.15em;color:var(--gold-soft);text-shadow:none}
 
@@ -111,7 +111,7 @@ p{margin:0}
 .arch .swing{transform-box:fill-box;transform-origin:50% 0;animation:bell 2.6s ease-in-out infinite alternate}
 .arch .swing.b2{animation-delay:-.8s}.arch .swing.b3{animation-delay:-1.6s}
 @keyframes bell{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
-.rangoli{position:absolute;left:50%;bottom:-6%;width:78%;aspect-ratio:1;transform:translateX(-50%) scaleY(.3);transform-origin:50% 100%;pointer-events:none}
+.rangoli{position:absolute;overflow:hidden;left:50%;bottom:-6%;width:78%;aspect-ratio:1;transform:translateX(-50%) scaleY(.3);transform-origin:50% 100%;pointer-events:none}
 .rangoli svg{width:100%;height:100%;animation:spin 60s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .person{position:absolute;bottom:3%;width:40%;height:76%;padding:0;margin:0;border:0;background:none;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;-webkit-tap-highlight-color:transparent}
@@ -149,7 +149,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .panel{max-width:980px;margin-left:auto;margin-right:auto;text-align:center}
 .kicker{font-family:var(--font-deva);color:var(--gold-soft);font-size:var(--step-1);line-height:1.3}
 .panel h2{font-family:var(--font-display);font-weight:400;font-size:var(--step-2);line-height:1.1;margin:4px 0 8px;color:var(--haldi);text-wrap:balance}
-.lede{max-width:54ch;margin:0 auto 22px;color:var(--ivory-2);text-wrap:pretty}
+.lede{word-wrap:break-word;overflow-wrap:anywhere;max-width:54ch;margin:0 auto 22px;color:var(--ivory-2);text-wrap:pretty}
 .paper{max-width:760px;background:var(--ivory);color:var(--ink);border-radius:22px;padding:clamp(22px,4vw,44px) clamp(16px,4vw,44px);box-shadow:inset 0 0 0 2px var(--gold),inset 0 0 0 7px var(--ivory),inset 0 0 0 8px var(--gold),0 24px 50px var(--shadow)}
 .paper.wide{max-width:980px}
 .paper .kicker{color:var(--sindoor)}
@@ -181,7 +181,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .scratch.revealed .scratch-foil{opacity:0;pointer-events:none}
 .scratch.revealed .scratch-under{animation:glow 1.6s ease 1}
 @keyframes glow{0%{filter:brightness(1.8)}100%{filter:none}}
-.sd-label{margin-top:16px;font-family:var(--font-deva);font-style:italic;color:var(--ink-soft);font-size:var(--step-1)}
+.sd-label{word-wrap:break-word;overflow-wrap:anywhere;margin-top:16px;font-family:var(--font-deva);font-style:italic;color:var(--ink-soft);font-size:var(--step-1)}
 .paper .link-btn{color:var(--ink-soft);margin-top:6px}
 .countdown{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
 .cd{width:84px;padding:10px 6px 8px;border-radius:14px;background:var(--kumkum);color:var(--ivory);box-shadow:inset 0 0 0 2px var(--gold)}
@@ -231,10 +231,10 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .ev-icon{position:absolute;top:-32px;left:50%;transform:translateX(-50%);width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--ev);color:var(--ivory);box-shadow:0 0 0 4px var(--ivory),0 0 0 6px var(--gold),0 8px 16px var(--shadow)}
 .ev-icon svg{width:34px;height:34px}
 .ev-hi{font-family:var(--font-deva);color:var(--ev);font-size:1rem;line-height:1.3}
-.ev-name{font-family:var(--font-display);font-weight:400;font-size:1.6rem;line-height:1.15;margin:0;color:var(--kumkum);word-wrap:break-word;overflow-wrap:anywhere}
+.ev-name{max-width:100%;font-family:var(--font-display);font-weight:400;font-size:1.6rem;line-height:1.15;margin:0;color:var(--kumkum);word-wrap:break-word;overflow-wrap:anywhere}
 .ev-when{margin-top:6px;font-weight:700;font-variant-numeric:tabular-nums}
-.ev-where{color:var(--ink-soft);word-wrap:break-word;overflow-wrap:anywhere}
-.ev-note{margin-top:auto;padding-top:12px;width:100%;font-family:var(--font-deva);font-style:italic;color:var(--ink-soft);line-height:1.4}
+.ev-where{max-width:100%;color:var(--ink-soft);word-wrap:break-word;overflow-wrap:anywhere}
+.ev-note{word-wrap:break-word;overflow-wrap:anywhere;margin-top:auto;padding-top:12px;width:100%;font-family:var(--font-deva);font-style:italic;color:var(--ink-soft);line-height:1.4}
 .ev-note::before{content:"";display:block;height:1px;margin:0 auto 10px;width:60%;background:var(--ev-line)}
 .events-empty{color:var(--ivory-2)}
 
@@ -259,7 +259,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 
 /* ---------- rsvp & footer ---------- */
 .rsvp-card{max-width:520px;margin:0 auto;padding:22px 18px;border-radius:22px;background:var(--kumkum-deep);box-shadow:inset 0 0 0 2px var(--gold),0 20px 40px var(--shadow)}
-.rsvp-who{color:var(--ivory-2)}
+.rsvp-who{word-wrap:break-word;overflow-wrap:anywhere;color:var(--ivory-2)}
 .rsvp-who strong{color:var(--ivory)}
 .phone{margin-top:4px;font-family:var(--font-display);font-size:var(--step-2);line-height:1.2;color:var(--haldi);user-select:all;word-wrap:break-word;overflow-wrap:anywhere}
 .rsvp-card .flash{color:var(--gold-soft)}
@@ -271,7 +271,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 @keyframes wave{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
 .foot-k{margin-top:22px;font-family:var(--font-deva);color:var(--gold);font-size:var(--step-1)}
 .foot-v{color:var(--ivory-2);white-space:pre-line;word-wrap:break-word;overflow-wrap:anywhere}
-.manuhar{font-family:var(--font-deva);font-size:var(--step-1);color:var(--ivory)}
+.manuhar{word-wrap:break-word;overflow-wrap:anywhere;font-family:var(--font-deva);font-size:var(--step-1);color:var(--ivory)}
 .see-you{margin-top:26px;font-family:var(--font-display);font-size:var(--step-2);color:var(--haldi);line-height:1.15}
 
 /* ---------- overlays ---------- */
@@ -315,6 +315,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .slot.drag{border-color:var(--rani);background:#fdeef3}
 .slot:focus-within .btn{outline:3px solid var(--rani);outline-offset:2px}
 .slot-name{font-weight:700}
+.slot-prev img.photo{width:auto!important;height:100%!important;max-width:100%}
 .slot-prev{width:100%;height:150px;display:flex;align-items:flex-end;justify-content:center;border-radius:10px;overflow:hidden;background:repeating-conic-gradient(var(--ivory-2) 0 25%,var(--field) 0 50%) 0 0/16px 16px}
 .slot .link-btn{color:var(--sindoor);padding:0}
 .vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
@@ -827,8 +828,25 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       img.classList.toggle('photo', usable && !!p.photoOpaque);
     });
   }
+  // Privacy modes (e.g. Firefox resistFingerprinting) return fake pixels from canvas reads; detect that once.
+  let readbackOK = null;
+  function canReadBack() {
+    if (readbackOK === null) {
+      readbackOK = safe('readback', () => {
+        const c = document.createElement('canvas');
+        c.width = 2; c.height = 1;
+        const x = c.getContext('2d');
+        if (!x) return false;
+        x.fillStyle = '#ff0000'; x.fillRect(0, 0, 1, 1);
+        const d = x.getImageData(0, 0, 2, 1).data;
+        return d[0] > 200 && d[1] < 50 && d[3] > 200 && d[7] < 20;
+      }, false);
+    }
+    return readbackOK;
+  }
   // Share of a decoded picture's pixels that are actually visible, or null when this device can't tell.
   function visibleShare(im) {
+    if (!canReadBack()) return null;
     try {
       const c = document.createElement('canvas');
       c.width = 48; c.height = 48;
@@ -843,7 +861,16 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     } catch (e) { return null; }
   }
   const photoShare = new Map();
-  // A saved photo that decodes but paints (almost) nothing falls back to the default cartoon too.
+  function useCartoonFor(img, src, fallback) {
+    brokenPhotos.add(src);
+    img.classList.remove('photo');
+    img.setAttribute('src', fallback);
+    const who = img.getAttribute('data-img');
+    if (owner && state[who] && state[who].photo === src) {
+      safe('broken-note', () => setStatus(`The saved picture of the ${who} can't be shown on this device, so the default cartoon is showing. Upload it again, or tap "Use the default cartoon".`));
+    }
+  }
+  // A saved photo that decodes but paints nothing falls back to the default cartoon too.
   document.addEventListener('load', (e) => {
     const img = e.target;
     if (!img || img.tagName !== 'IMG' || !img.hasAttribute('data-img')) return;
@@ -851,12 +878,9 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     const src = img.getAttribute('src') || '';
     if (!fallback || src === fallback) return;
     if (!photoShare.has(src)) photoShare.set(src, visibleShare(img));
-    const share = photoShare.get(src);
-    if (share !== null && share < 0.01) {
-      brokenPhotos.add(src);
-      img.classList.remove('photo');
-      img.setAttribute('src', fallback);
-    }
+    let share = photoShare.get(src);
+    if (share === 0 && /^data:image\/jpe?g/i.test(src)) share = null; // a JPEG can't be transparent: the device just couldn't draw it
+    if (share !== null && share < 0.002) useCartoonFor(img, src, fallback);
   }, true);
   // A saved photo this device can't decode falls back to the default cartoon instead of an empty space.
   document.addEventListener('error', (e) => {
@@ -865,9 +889,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     const fallback = ART[img.getAttribute('data-img')];
     const src = img.getAttribute('src') || '';
     if (!fallback || src === fallback) return;
-    brokenPhotos.add(src);
-    img.classList.remove('photo');
-    img.setAttribute('src', fallback);
+    useCartoonFor(img, src, fallback);
   }, true);
   function render() {
     safe('render:art', renderArt);
@@ -1094,7 +1116,9 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     function tick(t) {
       try { step(t); } catch (e) {
         broken = true; ambient = false; parts.length = 0; raf = 0;
-        try { ctx.clearRect(0, 0, W, H); console.error('[invite] petals failed:', e); } catch (err) { /* ignore */ }
+        try { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); } catch (err) { /* ignore */ }
+        cv.hidden = true;
+        try { console.error('[invite] petals failed:', e); } catch (err) { /* no console */ }
         return;
       }
       raf = parts.length || ambient ? requestAnimationFrame(tick) : 0;
@@ -1121,7 +1145,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     }
     function start() { if (!raf && !broken) raf = requestAnimationFrame(tick); }
     function burst(x, y, n) {
-      if (RM) return;
+      if (RM || broken) return;
       for (let i = 0; i < n; i++) {
         const a = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 7;
         parts.push(make(x, y, { vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 3, g: 0.11, max: 2.4, life: 240, shape: Math.random() < 0.22 ? 'spark' : 'petal', c: Math.random() < 0.22 ? '#ffe08a' : pick(COLORS) }));
@@ -1129,13 +1153,13 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       start();
     }
     function hearts(x, y, n) {
-      if (RM) return;
+      if (RM || broken) return;
       for (let i = 0; i < n; i++) {
         parts.push(make(x + (Math.random() - 0.5) * 40, y, { vx: (Math.random() - 0.5) * 2.4, vy: -2 - Math.random() * 2.5, g: -0.012, max: 3, life: 110, shape: 'heart', s: 12 + Math.random() * 10, c: pick(['#d6246e', '#c8102e', '#ff5d8f']), vr: (Math.random() - 0.5) * 0.04, rot: (Math.random() - 0.5) * 0.4 }));
       }
       start();
     }
-    function setAmbient(v) { ambient = !!v && !RM; if (ambient) start(); }
+    function setAmbient(v) { ambient = !!v && !RM && !broken; if (ambient) start(); }
     size();
     window.addEventListener('resize', size);
     return { burst, hearts, ambient: setAmbient };
@@ -1183,7 +1207,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
   const foil = $('#scratch-foil');
   const afterReveal = $('#after-reveal');
   const skipBtn = $('#scratch-skip');
-  let fctx = null, fw = 0, fh = 0, dprF = 1, scratching = false, lastPt = null, moves = 0, touched = false, revealed = false;
+  let fctx = null, fw = 0, fh = 0, dprF = 1, scratching = false, lastPt = null, moves = 0, touched = false, revealed = false, strokeLen = 0;
   const revealKey = () => 'inv-revealed:' + state.wedding.datetime;
   function paintFoil() {
     const r = scratch.getBoundingClientRect();
@@ -1217,7 +1241,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     fctx.fillText('to reveal the wedding date', fw / 2, fh / 2 + fh * 0.09);
     fctx.strokeStyle = 'rgba(90,11,31,.45)'; fctx.lineWidth = 2; fctx.setLineDash([2, 6]);
     fctx.strokeRect(10, 10, fw - 20, fh - 20); fctx.setLineDash([]);
-    touched = false;
+    touched = false; strokeLen = 0;
   }
   function pt(e) { const r = foil.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
   function scrape(a, b) {
@@ -1227,10 +1251,13 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     fctx.lineWidth = Math.max(30, fw * 0.1);
     fctx.globalAlpha = 1; fctx.strokeStyle = '#000';
     fctx.beginPath(); fctx.moveTo(a.x, a.y); fctx.lineTo(b.x + 0.01, b.y); fctx.stroke();
+    strokeLen += Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
     touched = true;
   }
   function clearedRatio() {
     if (!fctx) return 1;
+    // Where canvas reads are faked, estimate: one full-width swipe clears about 14% of the foil.
+    if (!canReadBack()) return Math.min(1, (strokeLen / Math.max(1, fw)) * 0.14);
     try {
       const data = fctx.getImageData(0, 0, foil.width, foil.height).data;
       let clear = 0, total = 0;
@@ -1259,12 +1286,13 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     });
   }
   function resetScratch() {
+    const painted = safe('foil', () => { paintFoil(); return !!fctx; }, false);
+    if (!painted) { foil.hidden = true; return; } // nothing to scratch on this device, so the date stays revealed
     revealed = false;
     scratch.classList.remove('revealed');
     afterReveal.hidden = true;
     skipBtn.hidden = false;
     store.set(revealKey(), '');
-    paintFoil();
   }
   const scratchOk = safe('scratch', () => {
     foil.addEventListener('pointerdown', (e) => {
@@ -1277,9 +1305,9 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     foil.addEventListener('pointermove', (e) => {
       if (!scratching || revealed) return;
       const p = pt(e); scrape(lastPt, p); lastPt = p;
-      if (++moves % 10 === 0 && clearedRatio() > 0.5) reveal(true);
+      if (++moves % 10 === 0 && clearedRatio() > 0.45) reveal(true);
     });
-    const endScratch = () => { if (!scratching) return; scratching = false; if (!revealed && clearedRatio() > 0.42) reveal(true); };
+    const endScratch = () => { if (!scratching) return; scratching = false; if (!revealed && clearedRatio() > 0.36) reveal(true); };
     foil.addEventListener('pointerup', endScratch);
     foil.addEventListener('pointercancel', endScratch);
     skipBtn.addEventListener('click', () => reveal(true));
@@ -1291,7 +1319,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     }
     return true;
   }, false);
-  if (!scratchOk || !fctx) safe('scratch-fallback', () => { foil.hidden = true; reveal(false); });
+  if (!scratchOk || !fctx) safe('scratch-fallback', () => { foil.hidden = true; reveal(false); $('#scratch-again').hidden = true; });
 
   /* ---------------- countdown ---------------- */
   function tickCountdown() {
@@ -1572,12 +1600,15 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       const r = await processImage(file);
       const check = await loadImage(r.src); // never put a picture into the page that does not decode
       if (!check.naturalWidth) throw failure('decode');
-      const share = visibleShare(check); // never put a picture into the page that guests couldn't see
+      let share = visibleShare(check); // never put a picture into the page that guests couldn't see
+      if (share === 0 && r.opaque) share = null; // an opaque photo can't be invisible: the device just couldn't draw it
       if (share !== null && share < 0.01) throw failure(share === 0 ? 'blank' : 'faint');
       state[who].photo = r.src;
       state[who].photoOpaque = r.opaque;
       changed(); render();
-      setStatus(r.opaque ? 'Added. This picture has no transparent background, so it shows in a round frame. A transparent PNG looks best on the props.' : 'Added. Save when you are ready for guests to see it.');
+      if (r.opaque) setStatus('Added. This picture has no transparent background, so it shows in a round frame. A transparent PNG looks best on the props.');
+      else if (share === null) setStatus('Added, but this device could not check the picture. Make sure the figure shows in the preview above before you save.');
+      else setStatus('Added. Save when you are ready for guests to see it.');
     } catch (e) {
       setStatus(PHOTO_ERRORS[e && e.code] || PHOTO_ERRORS.decode);
     }
@@ -1678,7 +1709,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       const [art, user] = await Promise.all([window.claude.use('artifact'), window.claude.use('user')]);
       if (!art || !user) return;
       if (await user.canEdit()) { owner = { mode: 'viewer', art }; applyOwner(); }
-    } catch (e) { /* stay read-only */ }
+    } catch (e) { try { console.warn('[invite] owner check failed:', e); } catch (err) { /* no console */ } }
   }
   window.addEventListener('hashchange', () => { if (!IN_VIEWER) detectOwner(); });
 
