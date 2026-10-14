@@ -314,7 +314,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .slot.drag{border-color:var(--rani);background:#fdeef3}
 .slot:focus-within .btn{outline:3px solid var(--rani);outline-offset:2px}
 .slot-name{font-weight:700}
-.slot-prev img.photo{width:auto!important;height:100%!important;max-width:100%}
+.slot-prev img.photo{max-width:150px}
 .slot-prev{width:100%;height:150px;display:flex;align-items:flex-end;justify-content:center;border-radius:10px;overflow:hidden;background:repeating-conic-gradient(var(--ivory-2) 0 25%,var(--field) 0 50%) 0 0/16px 16px}
 .slot .link-btn{color:var(--sindoor);padding:0}
 .vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
@@ -864,10 +864,17 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     brokenPhotos.add(src);
     img.classList.remove('photo');
     img.setAttribute('src', fallback);
-    const who = img.getAttribute('data-img');
-    if (owner && state[who] && state[who].photo === src) {
-      safe('broken-note', () => setStatus(`The saved picture of the ${who} can't be shown on this device, so the default cartoon is showing. Upload it again, or tap "Use the default cartoon".`));
-    }
+    noteBrokenPhotos();
+  }
+  // Tells the owner (whenever both the image check and the owner check have finished) that guests see the cartoon.
+  function noteBrokenPhotos() {
+    if (!owner) return;
+    ['groom', 'bride'].forEach((who) => {
+      const p = state[who];
+      if (p && p.photo && brokenPhotos.has(p.photo)) {
+        safe('broken-note', () => setStatus(`The saved picture of the ${who} can't be shown on this device, so the default cartoon is showing. Upload it again, or tap "Use the default cartoon".`));
+      }
+    });
   }
   // A saved photo that decodes but paints nothing falls back to the default cartoon too.
   document.addEventListener('load', (e) => {
@@ -1697,6 +1704,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
         : 'Your changes show on the page behind this panel as you type. Guests see them once you save.';
     });
     render();
+    safe('broken-note', noteBrokenPhotos);
   }
   async function detectOwner() {
     if (!IN_VIEWER) {
