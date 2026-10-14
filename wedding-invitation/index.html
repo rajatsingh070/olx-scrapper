@@ -61,7 +61,7 @@ p{margin:0}
 /* ---------- toran (marigold & mango-leaf garland) ---------- */
 .toran{position:relative;height:128px;overflow:hidden;pointer-events:none}
 .toran-rope{position:absolute;top:0;left:0;right:0;height:14px;background:repeating-linear-gradient(90deg,var(--leaf) 0 9px,var(--leaf-dark) 9px 18px);border-bottom:3px solid var(--gold);box-shadow:0 4px 10px var(--shadow);z-index:2}
-.toran-strands{position:absolute;top:8px;left:0;right:0;display:flex;justify-content:space-between;padding-inline:4px}
+.toran-strands{position:absolute;top:8px;left:0;right:0;display:flex;justify-content:space-between;padding-left:4px;padding-right:4px}
 .strand{display:flex;flex-direction:column;align-items:center;transform-origin:50% 0;animation:sway 4.2s ease-in-out infinite alternate}
 .strand::before{content:"";width:2px;height:8px;background:var(--gold)}
 .leaf{width:13px;height:30px;margin-top:-2px;background:linear-gradient(90deg,var(--leaf-dark),var(--leaf) 55%,#7fb043);border-radius:50% 50% 50% 50%/80% 80% 20% 20%;clip-path:polygon(50% 100%,0 30%,10% 0,90% 0,100% 30%)}
@@ -92,19 +92,19 @@ p{margin:0}
 @keyframes gateOut{to{opacity:0;visibility:hidden}}
 .gate-ganesh{font-family:var(--font-deva);color:var(--gold-soft);font-size:1rem}
 .gate-title{font-family:var(--font-display);font-size:clamp(2.8rem,12vw,4.4rem);line-height:1.15;color:var(--haldi);margin-top:6px;text-shadow:0 3px 0 rgba(0,0,0,.35)}
-.gate-names{font-family:var(--font-display);font-size:var(--step-1);color:var(--ivory);overflow-wrap:anywhere}
+.gate-names{font-family:var(--font-display);font-size:var(--step-1);color:var(--ivory);word-wrap:break-word;overflow-wrap:anywhere}
 .gate-names .amp{color:var(--gold)}
 .gate-cta{margin-top:14px;display:inline-block;padding:8px 18px;border-radius:999px;background:var(--sindoor);color:var(--ivory);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.82rem;animation:pulse 1.8s ease-in-out infinite}
 @keyframes pulse{50%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(200,16,46,.25)}}
 
 /* ---------- page ---------- */
-.page{padding-inline:16px;padding-block:0 32px}
-.hero{position:relative;text-align:center;padding-block:0 8px;max-width:980px;margin-inline:auto}
+.page{padding-left:16px;padding-right:16px;padding-top:0;padding-bottom:32px}
+.hero{position:relative;text-align:center;padding-top:0;padding-bottom:8px;max-width:980px;margin-left:auto;margin-right:auto}
 .kalash{width:68px;height:78px;margin:-8px auto 0;display:block;filter:drop-shadow(0 4px 6px var(--shadow))}
 .ganesh{font-family:var(--font-deva);color:var(--gold-soft);font-size:var(--step-1)}
 .invite-line{max-width:36ch;margin:12px auto 0;color:var(--ivory-2);font-family:var(--font-deva);font-style:italic;font-size:var(--step-1);line-height:1.45;text-wrap:balance}
-.names{font-family:var(--font-display);font-weight:400;font-size:var(--step-3);line-height:1.05;margin:14px auto 0;max-width:14ch;text-wrap:balance;overflow-wrap:anywhere;color:var(--haldi);text-shadow:0 3px 0 rgba(30,2,8,.6),0 0 28px rgba(242,159,5,.35)}
-.names .weds{display:inline-block;font-family:var(--font-deva);font-style:italic;font-size:.34em;vertical-align:.35em;margin-inline:.15em;color:var(--gold-soft);text-shadow:none}
+.names{font-family:var(--font-display);font-weight:400;font-size:var(--step-3);line-height:1.05;margin:14px auto 0;max-width:14ch;text-wrap:balance;word-wrap:break-word;overflow-wrap:anywhere;color:var(--haldi);text-shadow:0 3px 0 rgba(30,2,8,.6),0 0 28px rgba(242,159,5,.35)}
+.names .weds{display:inline-block;font-family:var(--font-deva);font-style:italic;font-size:.34em;vertical-align:.35em;margin-left:.15em;margin-right:.15em;color:var(--gold-soft);text-shadow:none}
 
 .stage{position:relative;width:min(100%,560px);aspect-ratio:400/360;margin:18px auto 0}
 .arch{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible}
@@ -133,7 +133,7 @@ p{margin:0}
 img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height:100%;object-fit:cover!important;object-position:50% 25%!important;border-radius:50%;border:3px solid var(--gold);background:var(--ivory)}
 
 .parents{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:560px;margin:14px auto 0}
-.parents p{font-size:var(--step--1);color:var(--ivory-2);line-height:1.4;min-width:0;overflow-wrap:anywhere}
+.parents p{font-size:var(--step--1);color:var(--ivory-2);line-height:1.4;min-width:0;word-wrap:break-word;overflow-wrap:anywhere}
 .parents strong{display:block;font-family:var(--font-display);font-weight:400;font-size:var(--step-1);color:var(--gold-soft)}
 .tap-hint{margin-top:12px;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
 .owner-note{max-width:560px;margin:16px auto 0;padding:12px 16px;border-radius:14px;background:var(--ivory);color:var(--ink);font-size:var(--step--1);box-shadow:inset 0 0 0 2px var(--haldi)}
@@ -146,7 +146,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .diya .flame{position:absolute;left:50%;bottom:14px;width:11px;height:18px;margin-left:-5.5px;background:radial-gradient(circle at 50% 72%,#fff7cc 0 22%,var(--haldi) 45%,var(--marigold) 75%);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;transform-origin:50% 100%;animation:flicker 1.4s ease-in-out infinite alternate;box-shadow:0 0 16px 5px rgba(255,201,60,.45)}
 @keyframes flicker{0%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.08,.94) rotate(2deg)}100%{transform:scale(.94,1.06) rotate(-1deg)}}
 
-.panel{max-width:980px;margin-inline:auto;text-align:center}
+.panel{max-width:980px;margin-left:auto;margin-right:auto;text-align:center}
 .kicker{font-family:var(--font-deva);color:var(--gold-soft);font-size:var(--step-1);line-height:1.3}
 .panel h2{font-family:var(--font-display);font-weight:400;font-size:var(--step-2);line-height:1.1;margin:4px 0 8px;color:var(--haldi);text-wrap:balance}
 .lede{max-width:54ch;margin:0 auto 22px;color:var(--ivory-2);text-wrap:pretty}
@@ -231,9 +231,9 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .ev-icon{position:absolute;top:-32px;left:50%;transform:translateX(-50%);width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--ev);color:var(--ivory);box-shadow:0 0 0 4px var(--ivory),0 0 0 6px var(--gold),0 8px 16px var(--shadow)}
 .ev-icon svg{width:34px;height:34px}
 .ev-hi{font-family:var(--font-deva);color:var(--ev);font-size:1rem;line-height:1.3}
-.ev-name{font-family:var(--font-display);font-weight:400;font-size:1.6rem;line-height:1.15;margin:0;color:var(--kumkum);overflow-wrap:anywhere}
+.ev-name{font-family:var(--font-display);font-weight:400;font-size:1.6rem;line-height:1.15;margin:0;color:var(--kumkum);word-wrap:break-word;overflow-wrap:anywhere}
 .ev-when{margin-top:6px;font-weight:700;font-variant-numeric:tabular-nums}
-.ev-where{color:var(--ink-soft);overflow-wrap:anywhere}
+.ev-where{color:var(--ink-soft);word-wrap:break-word;overflow-wrap:anywhere}
 .ev-note{margin-top:auto;padding-top:12px;width:100%;font-family:var(--font-deva);font-style:italic;color:var(--ink-soft);line-height:1.4}
 .ev-note::before{content:"";display:block;height:1px;margin:0 auto 10px;width:60%;background:var(--ev-line)}
 .events-empty{color:var(--ivory-2)}
@@ -251,8 +251,8 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .map-chip{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--kumkum);color:var(--ivory);font-size:.85rem;font-weight:700;box-shadow:0 0 0 2px var(--gold)}
 .map-card:hover .map-chip{background:var(--sindoor)}
 .venue-info{min-width:0}
-.venue-name{font-family:var(--font-display);font-weight:400;font-size:var(--step-2);line-height:1.1;margin:0;color:var(--kumkum);overflow-wrap:anywhere}
-.venue-addr{margin-top:6px;color:var(--ink-soft);white-space:pre-line;overflow-wrap:anywhere}
+.venue-name{font-family:var(--font-display);font-weight:400;font-size:var(--step-2);line-height:1.1;margin:0;color:var(--kumkum);word-wrap:break-word;overflow-wrap:anywhere}
+.venue-addr{margin-top:6px;color:var(--ink-soft);white-space:pre-line;word-wrap:break-word;overflow-wrap:anywhere}
 .venue-info .btn-row{justify-content:flex-start}
 .flash{min-height:1.4em;margin-top:8px;font-size:var(--step--1);color:var(--mehendi)}
 .paper .btn.ghost{color:var(--kumkum)}
@@ -261,16 +261,16 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .rsvp-card{max-width:520px;margin:0 auto;padding:22px 18px;border-radius:22px;background:var(--kumkum-deep);box-shadow:inset 0 0 0 2px var(--gold),0 20px 40px var(--shadow)}
 .rsvp-who{color:var(--ivory-2)}
 .rsvp-who strong{color:var(--ivory)}
-.phone{margin-top:4px;font-family:var(--font-display);font-size:var(--step-2);line-height:1.2;color:var(--haldi);user-select:all;overflow-wrap:anywhere}
+.phone{margin-top:4px;font-family:var(--font-display);font-size:var(--step-2);line-height:1.2;color:var(--haldi);user-select:all;word-wrap:break-word;overflow-wrap:anywhere}
 .rsvp-card .flash{color:var(--gold-soft)}
-.foot{text-align:center;padding-block:28px 120px;max-width:760px;margin-inline:auto}
+.foot{text-align:center;padding-top:28px;padding-bottom:120px;max-width:760px;margin-left:auto;margin-right:auto}
 .wave-couple{display:flex;justify-content:center;align-items:flex-end;gap:6px;height:clamp(150px,30vw,220px)}
 .wave-couple .fig{height:100%;width:clamp(100px,22vw,160px)}
 .wave-couple img{animation:wave 2.4s ease-in-out infinite;transform-origin:50% 100%}
 .wave-couple .fig+.fig img{animation-delay:-1.2s}
 @keyframes wave{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
 .foot-k{margin-top:22px;font-family:var(--font-deva);color:var(--gold);font-size:var(--step-1)}
-.foot-v{color:var(--ivory-2);white-space:pre-line;overflow-wrap:anywhere}
+.foot-v{color:var(--ivory-2);white-space:pre-line;word-wrap:break-word;overflow-wrap:anywhere}
 .manuhar{font-family:var(--font-deva);font-size:var(--step-1);color:var(--ivory)}
 .see-you{margin-top:26px;font-family:var(--font-display);font-size:var(--step-2);color:var(--haldi);line-height:1.15}
 
@@ -300,7 +300,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
 .ed-x{width:40px;height:40px;border:0;border-radius:50%;background:var(--ivory-2);color:var(--ink);font-size:1.4rem;line-height:1;cursor:pointer}
 .ed-body{flex:1;overflow:auto;padding:4px 18px 24px;overscroll-behavior:contain}
 .ed-intro{margin-top:10px;font-size:.92rem;color:var(--ink-soft)}
-.ed-sec{padding-block:16px;border-bottom:1px dashed var(--rule)}
+.ed-sec{padding-top:16px;padding-bottom:16px;border-bottom:1px dashed var(--rule)}
 .ed-sec h3{margin:0 0 10px;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sindoor)}
 .ed-field{display:grid;gap:4px;margin-bottom:12px}
 .ed-field label{font-weight:700;font-size:.92rem}
@@ -743,8 +743,29 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     const d = new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:00+05:30`);
     return isNaN(d.getTime()) ? null : d;
   }
-  const fmtDate = (d, o) => new Intl.DateTimeFormat('en-IN', Object.assign({ timeZone: TZ }, o)).format(d);
-  const fmtTime = (d) => new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit' }).format(d);
+  const WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const MO = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  // India time from the UTC clock, for engines whose Intl lacks time zones.
+  function istParts(d) {
+    const t = new Date(d.getTime() + 330 * 60000);
+    return { y: t.getUTCFullYear(), mo: t.getUTCMonth(), day: t.getUTCDate(), wd: t.getUTCDay(), h: t.getUTCHours(), mi: t.getUTCMinutes() };
+  }
+  function fmtDate(d, o) {
+    try { return new Intl.DateTimeFormat('en-IN', Object.assign({ timeZone: TZ }, o)).format(d); } catch (e) {
+      const p = istParts(d), out = [];
+      if (o.weekday) out.push(o.weekday === 'short' ? WD[p.wd].slice(0, 3) + ',' : WD[p.wd]);
+      if (o.day) out.push(String(p.day));
+      if (o.month) out.push(o.month === 'short' ? MO[p.mo].slice(0, 3) : MO[p.mo]);
+      if (o.year) out.push(String(p.y));
+      return out.join(' ');
+    }
+  }
+  function fmtTime(d) {
+    try { return new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit' }).format(d); } catch (e) {
+      const p = istParts(d);
+      return `${p.h % 12 || 12}:${pad(p.mi)} ${p.h < 12 ? 'AM' : 'PM'}`;
+    }
+  }
 
   /* ---------------- events ---------------- */
   const KINDS = {
@@ -806,6 +827,37 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       img.classList.toggle('photo', usable && !!p.photoOpaque);
     });
   }
+  // Share of a decoded picture's pixels that are actually visible, or null when this device can't tell.
+  function visibleShare(im) {
+    try {
+      const c = document.createElement('canvas');
+      c.width = 48; c.height = 48;
+      const x = c.getContext('2d');
+      if (!x) return null;
+      x.drawImage(im, 0, 0, 48, 48);
+      const d = x.getImageData(0, 0, 48, 48).data;
+      let n = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i] > 12) n++;
+      c.width = 0; c.height = 0;
+      return n / (48 * 48);
+    } catch (e) { return null; }
+  }
+  const photoShare = new Map();
+  // A saved photo that decodes but paints (almost) nothing falls back to the default cartoon too.
+  document.addEventListener('load', (e) => {
+    const img = e.target;
+    if (!img || img.tagName !== 'IMG' || !img.hasAttribute('data-img')) return;
+    const fallback = ART[img.getAttribute('data-img')];
+    const src = img.getAttribute('src') || '';
+    if (!fallback || src === fallback) return;
+    if (!photoShare.has(src)) photoShare.set(src, visibleShare(img));
+    const share = photoShare.get(src);
+    if (share !== null && share < 0.01) {
+      brokenPhotos.add(src);
+      img.classList.remove('photo');
+      img.setAttribute('src', fallback);
+    }
+  }, true);
   // A saved photo this device can't decode falls back to the default cartoon instead of an empty space.
   document.addEventListener('error', (e) => {
     const img = e.target;
@@ -863,7 +915,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       list.appendChild(li);
       return;
     }
-    evs.forEach((e) => {
+    evs.forEach((e) => safe('event', () => {
       const k = KINDS[kindOf(e.name)];
       const li = document.createElement('li');
       li.className = 'event';
@@ -879,7 +931,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       $('.ev-note', li).textContent = e.note;
       $('.ev-note', li).hidden = !e.note;
       list.appendChild(li);
-    });
+    }));
   }
   let embed = null;
   function syncMapEmbed() {
@@ -1003,7 +1055,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     if (!ctx) { cv.hidden = true; return FX_STUB; }
     const parts = [];
     const COLORS = ['#f29f05', '#ffb703', '#ffc93c', '#e8590c', '#c8102e', '#d6246e'];
-    let W = 0, H = 0, raf = 0, ambient = false, lastSpawn = 0;
+    let W = 0, H = 0, raf = 0, ambient = false, lastSpawn = 0, broken = false;
     const pick = (a) => a[Math.floor(Math.random() * a.length)];
     function size() {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1040,6 +1092,14 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       ctx.restore();
     }
     function tick(t) {
+      try { step(t); } catch (e) {
+        broken = true; ambient = false; parts.length = 0; raf = 0;
+        try { ctx.clearRect(0, 0, W, H); console.error('[invite] petals failed:', e); } catch (err) { /* ignore */ }
+        return;
+      }
+      raf = parts.length || ambient ? requestAnimationFrame(tick) : 0;
+    }
+    function step(t) {
       ctx.clearRect(0, 0, W, H);
       if (ambient && !document.hidden && t - lastSpawn > 700) {
         let n = 0;
@@ -1058,9 +1118,8 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
         if (p.life <= 0 || p.y > H + 30 || p.y < -260) parts.splice(i, 1);
         else draw(p);
       }
-      raf = parts.length || ambient ? requestAnimationFrame(tick) : 0;
     }
-    function start() { if (!raf) raf = requestAnimationFrame(tick); }
+    function start() { if (!raf && !broken) raf = requestAnimationFrame(tick); }
     function burst(x, y, n) {
       if (RM) return;
       for (let i = 0; i < n; i++) {
@@ -1166,6 +1225,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     fctx.globalCompositeOperation = 'destination-out';
     fctx.lineCap = 'round'; fctx.lineJoin = 'round';
     fctx.lineWidth = Math.max(30, fw * 0.1);
+    fctx.globalAlpha = 1; fctx.strokeStyle = '#000';
     fctx.beginPath(); fctx.moveTo(a.x, a.y); fctx.lineTo(b.x + 0.01, b.y); fctx.stroke();
     touched = true;
   }
@@ -1231,7 +1291,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
     }
     return true;
   }, false);
-  if (!scratchOk) safe('scratch-fallback', () => { foil.hidden = true; reveal(false); });
+  if (!scratchOk || !fctx) safe('scratch-fallback', () => { foil.hidden = true; reveal(false); });
 
   /* ---------------- countdown ---------------- */
   function tickCountdown() {
@@ -1474,7 +1534,11 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
         throw failure(maxA ? 'faint' : 'blank');
       }
       const opaque = clear < c.width * c.height * 0.02;
-      const bw = maxX - minX + 1, bh = maxY - minY + 1;
+      let sx = minX, sy = minY, bw = maxX - minX + 1, bh = maxY - minY + 1;
+      if (opaque && bw !== bh) { // photos sit in round frames: crop square, favouring the face near the top
+        const side = Math.min(bw, bh);
+        sx += Math.round((bw - side) / 2); sy += Math.round((bh - side) * 0.25); bw = side; bh = side;
+      }
       const s2 = Math.min(1, 720 / Math.max(bw, bh));
       const o = document.createElement('canvas'); canvases.push(o);
       o.width = Math.max(1, Math.round(bw * s2)); o.height = Math.max(1, Math.round(bh * s2));
@@ -1482,7 +1546,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       let out = '';
       try {
         if (!ox) throw failure('canvas');
-        ox.drawImage(c, minX, minY, bw, bh, 0, 0, o.width, o.height);
+        ox.drawImage(c, sx, sy, bw, bh, 0, 0, o.width, o.height);
         // PNG / JPEG only: every guest browser decodes them (Safari before 14 can't show WebP).
         out = opaque ? o.toDataURL('image/jpeg', 0.88) : o.toDataURL('image/png');
       } catch (e) { out = ''; }
@@ -1495,7 +1559,7 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
   }
   const PHOTO_ERRORS = {
     decode: "That image couldn't be read. Save it as a PNG and upload it again.",
-    blank: 'This picture came out empty on this device. Try a smaller copy of it (under about 2000 pixels), or a PNG with a visible figure.',
+    blank: "This picture came out empty. If it isn't a blank image, try a smaller copy of it (under about 2000 pixels).",
     faint: 'This picture is almost completely transparent, so guests would not see it. Choose a PNG where the figure is solid.',
     canvas: 'This picture is too large to prepare on this device. Try a smaller copy of it.',
     tainted: 'This browser would not let the page read that picture. Try a smaller copy of it, or upload from a computer.',
@@ -1508,6 +1572,8 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
       const r = await processImage(file);
       const check = await loadImage(r.src); // never put a picture into the page that does not decode
       if (!check.naturalWidth) throw failure('decode');
+      const share = visibleShare(check); // never put a picture into the page that guests couldn't see
+      if (share !== null && share < 0.01) throw failure(share === 0 ? 'blank' : 'faint');
       state[who].photo = r.src;
       state[who].photoOpaque = r.opaque;
       changed(); render();
@@ -1592,12 +1658,14 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
   });
 
   function applyOwner() {
-    fab.hidden = !owner || !editor.hidden;
-    if (!owner && !editor.hidden) editor.hidden = true;
-    saveBtn.textContent = owner && owner.mode === 'standalone' ? 'Download updated page' : 'Save and publish';
-    $('#ed-intro').textContent = owner && owner.mode === 'standalone'
-      ? 'Your changes show on the page behind this panel as you type. Download the updated page and upload it to your host when you are done.'
-      : 'Your changes show on the page behind this panel as you type. Guests see them once you save.';
+    safe('owner-ui', () => {
+      fab.hidden = !owner || !editor.hidden;
+      if (!owner && !editor.hidden) editor.hidden = true;
+      saveBtn.textContent = owner && owner.mode === 'standalone' ? 'Download updated page' : 'Save and publish';
+      $('#ed-intro').textContent = owner && owner.mode === 'standalone'
+        ? 'Your changes show on the page behind this panel as you type. Download the updated page and upload it to your host when you are done.'
+        : 'Your changes show on the page behind this panel as you type. Guests see them once you save.';
+    });
     render();
   }
   async function detectOwner() {
@@ -1620,18 +1688,18 @@ img.photo{aspect-ratio:1/1;width:100%!important;height:auto!important;max-height
   safe('render', render);
   // A guest who already revealed the date sees it straight away on later visits.
   if (store.get(revealKey()) === '1') safe('scratch-restore', () => reveal(false));
-  safe('owner', () => { detectOwner().catch(() => {}); });
+  safe('owner', () => { detectOwner().catch((e) => { try { console.error('[invite] owner failed:', e); } catch (err) { /* no console */ } }); });
   let lastW = window.innerWidth, resizeTimer = 0;
   window.addEventListener('resize', () => {
     // A width change mid-ride would leave the groom outside the stage, so land the baraat at once.
     if (window.innerWidth !== lastW) safe('baraat-resize', () => { if (bAnim) arrive(false); });
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
+      safe('baraat-resize', () => { if (bStage.classList.contains('wed')) proc.style.transform = `translateX(${baraatDistance()}px)`; });
       if (window.innerWidth === lastW) return;
       lastW = window.innerWidth;
       safe('toran', () => $$('[data-toran]').forEach(buildToran));
       if (!revealed && !touched) safe('foil', paintFoil);
-      safe('baraat-resize', () => { if (bStage.classList.contains('wed')) proc.style.transform = `translateX(${baraatDistance()}px)`; });
     }, 200);
   });
 })();
